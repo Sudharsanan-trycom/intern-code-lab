@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import postRoutes from "./routes/posts";
+import './jobs/cronJobs'
 
 dotenv.config();
 
