@@ -8,7 +8,7 @@ const limiter = new Bottleneck({
 });
 
 limiter.on("queued", (info) => {
-  console.log(`Job queued! Queue length `);
+  console.log(`Job queued! Queue length`);
 });
 
 export const fetchPosts = limiter.wrap(async (): Promise<any> => {
