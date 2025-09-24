@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { fetchPosts } from "../externalServices/externalApi";
 import { getCache, setCache } from "../externalServices/cacheService";
 import logger from "../externalServices/logger";
-import { getPostsByTenant, createPost} from "../services/postService"
+// import { getPostsByTenant, createPost} from "../services/postService"
+import { getTenantPostModel } from "../models/tenantModel"
 
 export const getPostsFromExternalApi = async (request: Request, response: Response) => {
   try {
@@ -34,6 +35,8 @@ export const getPostsFromExternalApi = async (request: Request, response: Respon
   }
 };
 
+/*
+For Shared Db and shared application
 export const createPostHandler = async (req: Request, res: Response) => {
   const tenantName = (req as any).tenantName; 
   const { title, content } = req.body;
@@ -45,4 +48,34 @@ export const getPostsHandler = async (req: Request, res: Response) => {
   const tenantName = (req as any).tenantName; 
   const posts = await getPostsByTenant(tenantName);
   res.json(posts);
+};
+*/ 
+
+export const createPostHandler = async (req: Request, res: Response) => {
+  try {
+    const tenantName = (req as any).tenantName;
+    const { title, content } = req.body;
+
+    const PostModel = getTenantPostModel(tenantName);
+    const post = await PostModel.create({ title, content });
+
+    res.json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to create post" });
+  }
+};
+
+export const getPostsHandler = async (req: Request, res: Response) => {
+  try {
+    const tenantName = (req as any).tenantName;
+
+    const PostModel = getTenantPostModel(tenantName);
+    const posts = await PostModel.find().sort({ createdAt: -1 });
+
+    res.json(posts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch posts" });
+  }
 };
