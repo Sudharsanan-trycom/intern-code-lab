@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { fetchPosts } from "../services/externalApi";
-import { getCache, setCache } from "../services/cacheService";
-import logger from "../services/logger";
+import { fetchPosts } from "../externalServices/externalApi";
+import { getCache, setCache } from "../externalServices/cacheService";
+import logger from "../externalServices/logger";
+import { getPostsByTenant, createPost} from "../services/postService"
 
-export const getPosts = async (request: Request, response: Response) => {
+export const getPostsFromExternalApi = async (request: Request, response: Response) => {
   try {
     const clientIP = request.ip || request.headers['x-forwarded-for'] || 'unknown';
     const cacheKey = `posts_${clientIP}`;
@@ -33,3 +34,15 @@ export const getPosts = async (request: Request, response: Response) => {
   }
 };
 
+export const createPostHandler = async (req: Request, res: Response) => {
+  const tenantName = (req as any).tenantName; 
+  const { title, content } = req.body;
+  const post = await createPost(tenantName, title, content);
+  res.json(post);
+};
+
+export const getPostsHandler = async (req: Request, res: Response) => {
+  const tenantName = (req as any).tenantName; 
+  const posts = await getPostsByTenant(tenantName);
+  res.json(posts);
+};

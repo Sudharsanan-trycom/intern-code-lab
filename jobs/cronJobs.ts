@@ -1,6 +1,6 @@
 import cron from "node-cron";
-import { fetchPosts } from "../services/externalApi";
-import { setCache } from "../services/cacheService"; 
+import { fetchPosts } from "../externalServices/externalApi";
+import { setCache } from "../externalServices/cacheService"; 
 
 // Run every 1 minute
 cron.schedule("*/2 * * * *", async () => {

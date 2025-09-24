@@ -1,7 +1,7 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { getPosts } from "../controllers/postController";
-
+import { createPostHandler, getPostsFromExternalApi, getPostsHandler } from "../controllers/postController";
+import { tenantMiddleware } from  "../middleware/tenantMiddleware"
 const router = Router();
 
 // Express rate limit: max 5 requests per minute per IP
@@ -11,6 +11,8 @@ const apiLimiter = rateLimit({
   message: "Too many requests from this IP, please try again later."
 });
 
-router.get("/", apiLimiter, getPosts);
+router.get("/external-api", apiLimiter, getPostsFromExternalApi);
+router.get("/:tenantName" , tenantMiddleware, getPostsHandler);
+router.post("/:tenantName", tenantMiddleware, createPostHandler);
 
 export default router;
